@@ -1,3 +1,5 @@
+import time
+
 import pyttsx3
 import speech_recognition as sr
 import datetime
@@ -21,8 +23,10 @@ engine.setProperty('rate', 150)
 
 def speak(audio):
     print("Assistant: " + audio)
+    engine.stop()
     engine.say(audio)
     engine.runAndWait()
+
 
 def wishme():
     hour = int(datetime.datetime.now().hour)
@@ -32,13 +36,14 @@ def wishme():
         speak("Good Afternoon!")
     else:
         speak("Good Evening!")
-    speak("Welcome to Speak Now! Please listen to the instructions carefully.")
-    speak("You will hear the questions.")
-    speak("And you will have to speak the answers.")
-    speak("Use the keyword REPEAT and provide the question number.")
-    speak("Say OPEN EXAM to start the exam.")
+   # speak("Welcome to Speak Now! Please listen to the instructions carefully.")
+   # speak("You will hear the questions.")
+   # speak("And you will have to speak the answers.")
+    #speak("Use the keyword REPEAT and provide the question number.")
+    #speak("Say OPEN EXAM to start the exam.")
 
 def takecommand():
+    global query
     r = sr.Recognizer()
     while True:
         with sr.Microphone() as source:
@@ -51,13 +56,15 @@ def takecommand():
                 print("Recognizing...")
                 query = r.recognize_google(audio, language='en-in')
                 print("User said:" + query)
-                return query
+                #return query
             except sr.UnknownValueError:
                 speak("Sorry, please say that again.")
             except sr.RequestError:
                 speak(random.choice(msg))
                 print("Request error.")
                 speak("Sorry, I'm having trouble. Please try again later.")
+
+            return query
 
 def question():
     file = open("Question.txt", "r")
@@ -79,24 +86,22 @@ def question():
 
 def question_parts():
     query1 = takecommand()
-
-    if "1" or "one" or "number 1" in query1:
+    if "1" in query1 or "one" in query1 or "number 1" in query1:
         file1 = open("Question1.txt", "r")
         for line in file1:
             speak(line)
             answer()
-
-    if "2" or "two" or "number 2" in query1:
+    if "2" in query1 or "two" in query1 or "number 2" in query1:
         file1 = open("Question2.txt", "r")
         for line in file1:
             speak(line)
             answer()
-
-    if "3" or "three" or "number 3" in query1:
+    if "3" in query1 or "three" in query1 or "number 3" in query1:
         file1 = open("Question3.txt", "r")
         for line in file1:
             speak(line)
             answer()
+
 
 def answer():
     global query
@@ -105,12 +110,13 @@ def answer():
         speak("Listening...")
         audio = r.listen(source)
     try:
+
         print("Recognizing...")
         query = r.recognize_google(audio, language='en-in')
         if "repeat" in query or "replay" in query:
             speak("Which question would you like to repeat?")
             question_parts()
-        if "skip" in query:
+        elif "skip" in query:
             speak("Which question would you like to hear now?")
             question_parts()
         speak("You said: " + query)
@@ -138,7 +144,7 @@ if __name__ == "__main__":
         elif "open google" in query:
             speak("Opening Google...")
             webbrowser.open("https://www.google.com")
-        elif "open exam" in query:
+        elif "open exam" or "exam" or "start exam" in query:
             question()
         elif "the time" in query:
             current_time = datetime.datetime.now().strftime("%H:%M:%S")
