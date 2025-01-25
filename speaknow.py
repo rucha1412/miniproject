@@ -185,7 +185,6 @@ if __name__ == "__main__":
                     server.sendmail("speaknow1620@gmail.com", receiver1, content)
                     server.quit()
                     speak("Email sent successfully!")
-
                 except:
                     speak("Sorry sir, I am unable to send your message at this moment")
 
