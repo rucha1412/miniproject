@@ -53,10 +53,9 @@ def takecommand():
                 print("User said:" + query)
                 return query
             except sr.UnknownValueError:
-                print("Could not understand audio.")
                 speak("Sorry, please say that again.")
-            except sr.RequestError:            speak(random.choice(msg))
-
+            except sr.RequestError:
+                speak(random.choice(msg))
                 print("Request error.")
                 speak("Sorry, I'm having trouble. Please try again later.")
 
@@ -79,50 +78,28 @@ def question():
 
 
 def question_parts():
-    speak("Which question would you like to repeat?")
     query1 = takecommand()
 
-    if "1" in query1:
+    if "1" or "one" or "number 1" in query1:
         file1 = open("Question1.txt", "r")
         for line in file1:
             speak(line)
             answer()
 
-    if "2" in query1:
+    if "2" or "two" or "number 2" in query1:
         file1 = open("Question2.txt", "r")
         for line in file1:
             speak(line)
             answer()
 
-    if "3" in query1:
-        file1 = open("Question3.txt", "r")
-        for line in file1:
-            speak(line)
-            answer()
-
-def skip_parts():
-    speak("Which question would you like to hear now?")
-    query1 = takecommand()
-
-    if "number 1" in query1:
-        file1 = open("Question1.txt", "r")
-        for line in file1:
-            speak(line)
-            answer()
-
-    if "number 2" in query1:
-        file1 = open("Question2.txt", "r")
-        for line in file1:
-            speak(line)
-            answer()
-
-    if "number 3" in query1:
+    if "3" or "three" or "number 3" in query1:
         file1 = open("Question3.txt", "r")
         for line in file1:
             speak(line)
             answer()
 
 def answer():
+    global query
     r = sr.Recognizer()
     with sr.Microphone() as source:
         speak("Listening...")
@@ -130,11 +107,12 @@ def answer():
     try:
         print("Recognizing...")
         query = r.recognize_google(audio, language='en-in')
-
-        if ("repeat") in query or ("replay") in query:
+        if "repeat" in query or "replay" in query:
+            speak("Which question would you like to repeat?")
             question_parts()
-        if ("skip") in query:
-            skip_parts()
+        if "skip" in query:
+            speak("Which question would you like to hear now?")
+            question_parts()
         speak("You said: " + query)
     except Exception as e:
         print(e)
@@ -151,7 +129,7 @@ if __name__ == "__main__":
         elif "bye" in query or "stop" in query:
             speak("Goodbye!")
             sys.exit()
-        elif ("what's up") in query or ("how are you") in query:
+        elif "what's up" in query or "how are you" in query:
             msg = ["I am fine", "Nice", "Just doing my work", "I am nice and full of energy"]
             speak(random.choice(msg))
         elif "open youtube" in query:
@@ -166,7 +144,7 @@ if __name__ == "__main__":
             current_time = datetime.datetime.now().strftime("%H:%M:%S")
             speak("The time is " + current_time)
 
-        elif ("mail") in query:
+        elif "mail" in query:
             speak("Who is the recipient?")
             recipient = takecommand()
 
