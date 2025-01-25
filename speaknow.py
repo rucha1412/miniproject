@@ -4,7 +4,9 @@ import datetime
 import wikipedia
 import webbrowser
 import sys
-
+import random
+import smtplib
+import re
 
 # Initialize the pyttsx3 engine for text-to-speech
 engine = pyttsx3.init()
@@ -48,12 +50,13 @@ def takecommand():
                 audio = r.listen(source)
                 print("Recognizing...")
                 query = r.recognize_google(audio, language='en-in')
-                print("User said: " + query)
+                print("User said:" + query)
                 return query
             except sr.UnknownValueError:
                 print("Could not understand audio.")
                 speak("Sorry, please say that again.")
-            except sr.RequestError:
+            except sr.RequestError:            speak(random.choice(msg))
+
                 print("Request error.")
                 speak("Sorry, I'm having trouble. Please try again later.")
 
@@ -73,6 +76,8 @@ def question():
         f.write(final_ans + "\n")
     f.close()
     speak("Your answers have been successfully recorded.")
+
+
 def question_parts():
     speak("Which question would you like to repeat?")
     query1 = takecommand()
@@ -125,6 +130,11 @@ def answer():
     try:
         print("Recognizing...")
         query = r.recognize_google(audio, language='en-in')
+
+        if ("repeat") in query or ("replay") in query:
+            question_parts()
+        if ("skip") in query:
+            skip_parts()
         speak("You said: " + query)
     except Exception as e:
         print(e)
@@ -141,6 +151,9 @@ if __name__ == "__main__":
         elif "bye" in query or "stop" in query:
             speak("Goodbye!")
             sys.exit()
+        elif ("what's up") in query or ("how are you") in query:
+            msg = ["I am fine", "Nice", "Just doing my work", "I am nice and full of energy"]
+            speak(random.choice(msg))
         elif "open youtube" in query:
             speak("Opening YouTube...")
             webbrowser.open("https://www.youtube.com")
@@ -152,6 +165,43 @@ if __name__ == "__main__":
         elif "the time" in query:
             current_time = datetime.datetime.now().strftime("%H:%M:%S")
             speak("The time is " + current_time)
+
+        elif ("mail") in query:
+            speak("Who is the recipient?")
+            recipient = takecommand()
+
+            if "demo" in recipient:
+                try:
+                    speak("receiver email address")
+                    receiver = takecommand()
+                    receiver1 = re.sub(r"\s+", "", receiver, flags=re.UNICODE)
+                    speak("What is the message?")
+                    content = takecommand()
+
+                    server = smtplib.SMTP("smtp.gmail.com", 587)
+                    server.ehlo()
+                    server.starttls()
+                    server.login("speaknow1620@gmail.com", "1620bece")
+                    server.sendmail("speaknow1620@gmail.com", receiver1, content)
+                    server.quit()
+                    speak("Email sent successfully!")
+
+                except:
+                    speak("Sorry sir, I am unable to send your message at this moment")
+
+        # elif ("open bootstrap") in query:
+        #   dir="file:///C:/Users/Rucha/Downloads/bootstrap-4.3.1/bootstrap-4.3.1/dist/Webpage1/website.html"
+        #  os.startfile(os.path.join(dir))
+
+       # elif ("play music") in query:
+       #     music_dir = "F:\\Song\\"
+       #     songs = ["Khalibali-Padmavati", "Krishna_Theme_(Flute)", "Mere_Nishaan-Kailash_Kher"]
+       #     random_music = music_dir + random.choice(songs) + ".mp3"
+        #    os.system(random_music)
+
+        #    speak("Here is your music! Enjoy!")
+
+            # os.startfile(os.path.join(music_dir,songs[0]))
         else:
             speak("Searching...")
             try:
